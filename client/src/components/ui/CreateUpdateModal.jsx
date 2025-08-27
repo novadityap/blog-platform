@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import {
   Dialog,
@@ -11,23 +11,23 @@ import { cn } from '@/lib/utils';
 
 const CreateUpdateModal = ({
   id,
+  isUpdate,
   isOpen,
   onClose,
+  onSuccess,
   entityName,
-  isCreate,
   FormComponent,
-  onSubmitComplete,
 }) => (
   <Dialog open={isOpen} onOpenChange={onClose}>
     <DialogContent
       className={cn(
         'overflow-hidden p-0',
-        entityName === 'property' && !isCreate && 'md:max-w-4xl'
+        entityName === 'property' && isUpdate && 'md:max-w-4xl'
       )}
     >
       <DialogHeader className="px-6 pt-6">
         <DialogTitle>
-          {isCreate ? `Create ${entityName}` : `Update ${entityName}`}
+          {isUpdate ? `Update ${entityName}` : `Create ${entityName}`}
         </DialogTitle>
         <DialogDescription className="sr-only"></DialogDescription>
       </DialogHeader>
@@ -35,9 +35,9 @@ const CreateUpdateModal = ({
         {FormComponent && (
           <FormComponent
             id={id}
-            isCreate={isCreate}
-            onSubmitComplete={onSubmitComplete}
-            onCancel={onClose}
+            isUpdate={isUpdate}
+            onSuccess={onSuccess}
+            onClose={onClose}
           />
         )}
       </div>

@@ -118,7 +118,7 @@ const updateProfile = async (req, res) => {
 
 const search = async (req, res) => {
   const query = validate(searchUserSchema, req.query);
-  const { page, limit, q } = query;
+  const { page, limit, q, sortBy, sortOrder } = query;
 
   const [{ users, totalUsers }] = await User.aggregate()
     .match({ _id: { $ne: new mongoose.Types.ObjectId(req.user.id) } })
@@ -143,7 +143,7 @@ const search = async (req, res) => {
     )
     .facet({
       users: [
-        { $sort: { 'role.name': 1, createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ],

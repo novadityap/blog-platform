@@ -51,7 +51,7 @@ const create = async (req, res) => {
 
 const search = async (req, res) => {
   const query = validate(searchPostSchema, req.query);
-  const { page, limit, q, category } = query;
+  const { page, limit, q, category, sortBy, sortOrder } = query;
 
   const [{ posts, totalPosts }] = await Post.aggregate()
     .lookup({
@@ -90,7 +90,7 @@ const search = async (req, res) => {
     .project({ likes: 0 })
     .facet({
       posts: [
-        { $sort: { createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ],

@@ -31,13 +31,13 @@ const create = async (req, res) => {
 
 const search = async (req, res) => {
   const query = validate(searchRoleSchema, req.query);
-  const { page, limit, q } = query;
+  const { page, limit, q, sortBy, sortOrder } = query;
 
   const [{ roles, totalRoles }] = await Role.aggregate()
     .match(q ? { name: { $regex: q, $options: 'i' } } : {})
     .facet({
       roles: [
-        { $sort: { createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ],

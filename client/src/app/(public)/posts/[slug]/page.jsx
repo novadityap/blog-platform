@@ -2,7 +2,6 @@
 
 import { useShowPostQuery } from '@/services/postApi';
 import {
-  useCreateCommentMutation,
   useListCommentsByPostQuery,
   useRemoveCommentMutation,
 } from '@/services/commentApi';
@@ -18,18 +17,9 @@ import {
 import { Skeleton } from '@/components/shadcn/skeleton';
 import { useEffect } from 'react';
 import { AspectRatio } from '@/components/shadcn/aspect-ratio';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormMessage,
-} from '@/components/shadcn/form';
-import { Textarea } from '@/components/shadcn/textarea';
 import { Button } from '@/components/shadcn/button';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import useFormHandler from '@/hooks/useFormHandler';
 import {
   Avatar,
   AvatarFallback,
@@ -37,84 +27,11 @@ import {
 } from '@/components/shadcn/avatar';
 import { useState } from 'react';
 import dayjs from 'dayjs';
-import { TbLoader, TbInfoCircle, TbHeartFilled, TbTrash } from 'react-icons/tb';
+import { TbInfoCircle, TbHeartFilled, TbTrash } from 'react-icons/tb';
 import { cn } from '@/lib/utils';
 import { useSelector } from 'react-redux';
 import Image from 'next/image';
-
-const CreateComment = ({
-  avatarUrl,
-  postId,
-  parentCommentId = null,
-  isReply = false,
-  onCancelReply,
-  replyTo,
-  className,
-}) => {
-  const { form, handleSubmit, isLoading, isSuccess } = useFormHandler({
-    params: [
-      { name: 'postId', value: postId },
-      { name: 'parentCommentId', value: parentCommentId },
-    ],
-    mutation: useCreateCommentMutation,
-    defaultValues: {
-      post: postId,
-      parentCommentId,
-      text: replyTo ?? '',
-    },
-  });
-
-  useEffect(() => {
-    if (isSuccess && isReply) onCancelReply();
-  }, [isSuccess, isReply]);
-
-  return (
-    <div className={cn('flex w-full gap-x-4', className)}>
-      <Avatar className={isReply ? 'size-8' : 'size-10'}>
-        <AvatarImage src={avatarUrl} alt="avatar" />
-      </Avatar>
-      <Form {...form}>
-        <form onSubmit={handleSubmit} className="space-y-4 w-full">
-          <FormField
-            name="text"
-            control={form.control}
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Textarea {...field} placeholder="Add a comment..." />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <div className="flex justify-end gap-x-2">
-            {isReply && (
-              <Button type="button" onClick={onCancelReply} variant="secondary">
-                Cancel
-              </Button>
-            )}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full sm:w-32"
-            >
-              {isLoading ? (
-                <>
-                  <TbLoader className="animate-spin mr-2 size-5" />
-                  Loading...
-                </>
-              ) : isReply ? (
-                'Reply'
-              ) : (
-                'Comment'
-              )}
-            </Button>
-          </div>
-        </form>
-      </Form>
-    </div>
-  );
-};
+import CommentForm from '@/components/ui/CommentForm'
 
 const Comments = ({ comments, postId, token, onRemove, currentUser }) => {
   const [replyToCommentId, setReplyToCommentId] = useState(null);
@@ -161,11 +78,12 @@ const Comments = ({ comments, postId, token, onRemove, currentUser }) => {
               </Button>
             )}
             {replyToCommentId === comment.id && (
-              <CreateComment
+              <CommentForm
                 avatarUrl={comment.user.avatar}
                 isReply={true}
                 postId={postId}
                 parentCommentId={comment.id}
+                replyTo={`@${comment.user.username} `}
                 onCancelReply={() => setReplyToCommentId(null)}
                 className="mt-2"
               />
@@ -210,7 +128,7 @@ const Comments = ({ comments, postId, token, onRemove, currentUser }) => {
                     </div>
                   </div>
                   {replyToCommentId === reply.id && (
-                    <CreateComment
+                    <CommentForm
                       avatarUrl={reply.user.avatar}
                       isReply={true}
                       postId={postId}
@@ -363,7 +281,7 @@ const PostDetail = () => {
       </CardContent>
       <CardFooter className="flex flex-col gap-y-6">
         {token ? (
-          <CreateComment
+          <CommentForm
             avatarUrl={post?.data?.user?.avatar || process.env.NEXT_PUBLIC_API_URL}
             postId={post?.data?.id}
           />

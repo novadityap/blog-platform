@@ -65,7 +65,7 @@ const listByPost = async (req, res) => {
 
 const search = async (req, res) => {
   const query = validate(searchCommentSchema, req.query);
-  const { page, limit, q } = query;
+  const { page, limit, q, sortBy, sortOrder } = query;
 
   const [{ comments, totalComments }] = await Comment.aggregate()
     .lookup({
@@ -97,7 +97,7 @@ const search = async (req, res) => {
     )
     .facet({
       comments: [
-        { $sort: { createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ],

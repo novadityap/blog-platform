@@ -18,38 +18,39 @@ import {
   useCreateRoleMutation,
   useUpdateRoleMutation,
 } from '@/services/roleApi';
-import {useEffect } from 'react';
+import { useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 
 const RoleFormSkeleton = () => (
   <div className="space-y-4">
-      <div className="space-y-2">
-        <Skeleton className="h-4 w-20" /> 
-        <Skeleton className="h-10 w-full rounded-md" /> 
-      </div>
-      <div className="flex justify-end gap-x-2">
-        <Skeleton className="h-10 w-24 rounded-md" /> 
-        <Skeleton className="h-10 w-24 rounded-md" /> 
-      </div>
+    <div className="space-y-2">
+      <Skeleton className="h-4 w-20" />
+      <Skeleton className="h-10 w-full rounded-md" />
     </div>
+    <div className="flex justify-end gap-x-2">
+      <Skeleton className="h-10 w-24 rounded-md" />
+      <Skeleton className="h-10 w-24 rounded-md" />
+    </div>
+  </div>
 );
 
-const RoleForm = ({onSubmitComplete, onCancel, isCreate, id}) => {
+const RoleForm = ({ id, isUpdate, onSuccess, onClose }) => {
   const { data: role, isLoading: isRoleLoading } = useShowRoleQuery(id, {
-    skip: isCreate || !id
+    skip: !isUpdate || !id,
   });
   const { form, handleSubmit, isLoading } = useFormHandler({
-    formType: 'datatable',
-    isCreate,
-    mutation: isCreate ? useCreateRoleMutation : useUpdateRoleMutation,
-    onSubmitComplete,
-    defaultValues: {
-      name: '',
+    isUpdate,
+    mutation: isUpdate ? useUpdateRoleMutation : useCreateRoleMutation,
+    onSuccess: result => {
+      onSuccess();
+      toast.success(result.message);
     },
-    ...(!isCreate && { params: [{ name: 'roleId', value: id }] }),
+    onError: e => toast.error(e.message),
+    ...(isUpdate && { params: [{ name: 'roleId', value: id }] }),
   });
 
   useEffect(() => {
-      if (!isCreate && role?.data) form.reset({ name: role.data.name });
+    if (isUpdate && role?.data) form.reset({ name: role.data.name });
   }, [role]);
 
   if (isRoleLoading) return <RoleFormSkeleton />;
@@ -71,19 +72,19 @@ const RoleForm = ({onSubmitComplete, onCancel, isCreate, id}) => {
           )}
         />
         <div className="flex justify-end gap-x-2">
-          <Button variant="secondary" type="button" onClick={onCancel}>
+          <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <TbLoader className="animate-spin" />
-                {isCreate ? 'Creating..' : 'Updating..'}
+                {isUpdate ? 'Updating..' : 'Creating..'}
               </>
-            ) : isCreate ? (
-              'Create'
-            ) : (
+            ) : isUpdate ? (
               'Update'
+            ) : (
+              'Create'
             )}
           </Button>
         </div>

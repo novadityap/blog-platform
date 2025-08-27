@@ -20,6 +20,7 @@ const Comment = () => {
   const columnsHelper = createColumnHelper();
   const columns = [
     columnsHelper.accessor('user.username', {
+      id: 'user.username',
       header: 'Username',
       size: 100,
       cell: info => (
@@ -27,6 +28,7 @@ const Comment = () => {
       ),
     }),
     columnsHelper.accessor('post.title', {
+      id: 'post.title',
       header: 'Post Title',
       size: 100,
       cell: info => (
@@ -34,6 +36,7 @@ const Comment = () => {
       ),
     }),
     columnsHelper.accessor('text', {
+      id: 'text',
       header: 'Text',
       size: 150,
       cell: info => (
@@ -55,7 +58,7 @@ const Comment = () => {
             columns={columns}
             searchQuery={useSearchCommentsQuery}
             removeMutation={useRemoveCommentMutation}
-            entityName='comment'
+            entityName="comment"
             allowCreate={false}
             allowUpdate={false}
           />

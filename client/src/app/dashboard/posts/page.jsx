@@ -21,6 +21,7 @@ const Post = () => {
   const columnsHelper = createColumnHelper();
   const columns = [
     columnsHelper.accessor('title', {
+      id: 'title',
       header: 'Title',
       size: 200,
       cell: info => (
@@ -28,6 +29,7 @@ const Post = () => {
       ),
     }),
     columnsHelper.accessor('user.username', {
+      id: 'user.username',
       header: 'Author',
       size: 100,
       cell: info => (
@@ -35,15 +37,12 @@ const Post = () => {
       ),
     }),
     columnsHelper.accessor('category.name', {
+      id: 'category.name',
       header: 'Category',
       size: 100,
       cell: info => (
         <div className="whitespace-normal break-words">{info.getValue()}</div>
       ),
-    }),
-    columnsHelper.accessor('totalLikes', {
-      header: 'Total Likes',
-      size: 60,
     }),
   ];
 
@@ -61,7 +60,7 @@ const Post = () => {
             searchQuery={useSearchPostsQuery}
             removeMutation={useRemovePostMutation}
             FormComponent={PostForm}
-            entityName='post'
+            entityName="post"
           />
         </CardContent>
       </Card>

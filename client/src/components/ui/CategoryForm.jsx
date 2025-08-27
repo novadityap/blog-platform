@@ -19,41 +19,44 @@ import {
 } from '@/services/categoryApi';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/shadcn/skeleton';
+import { toast } from 'react-hot-toast';
 
 const CategoryFormSkeleton = () => (
   <div className="space-y-4">
     <div className="space-y-2">
-      <Skeleton className="h-4 w-20" /> 
-      <Skeleton className="h-10 w-full rounded-md" /> 
+      <Skeleton className="h-4 w-20" />
+      <Skeleton className="h-10 w-full rounded-md" />
     </div>
     <div className="flex justify-end gap-x-2">
-      <Skeleton className="h-10 w-24 rounded-md" /> 
-      <Skeleton className="h-10 w-24 rounded-md" /> 
+      <Skeleton className="h-10 w-24 rounded-md" />
+      <Skeleton className="h-10 w-24 rounded-md" />
     </div>
   </div>
 );
 
-const CategoryForm = ({
-  id,
-  onSubmitComplete,
-  onCancel,
-  isCreate,
-}) => {
-  const { data: category, isLoading: isCategoryLoading } = useShowCategoryQuery(id, {
-    skip: isCreate || !id
-  });
+const CategoryForm = ({ id, onSuccess, onClose, isUpdate }) => {
+  const { data: category, isLoading: isCategoryLoading } = useShowCategoryQuery(
+    id,
+    {
+      skip: !isUpdate || !id,
+    }
+  );
   const { form, handleSubmit, isLoading } = useFormHandler({
-    isCreate,
-    mutation: isCreate ? useCreateCategoryMutation : useUpdateCategoryMutation,
-    onSubmitComplete,
+    isUpdate,
+    mutation: isUpdate ? useUpdateCategoryMutation : useCreateCategoryMutation,
     defaultValues: {
       name: '',
     },
-    ...(!isCreate && {params: [{ name: 'categoryId', value: id }]}),
+    onSuccess: result => {
+      onSuccess();
+      toast.success(result.message);
+    },
+    onError: e => toast.error(e.message),
+    ...(isUpdate && { params: [{ name: 'categoryId', value: id }] }),
   });
 
   useEffect(() => {
-      if (!isCreate && category?.data) form.reset({ name: category.data.name });
+    if (isUpdate && category?.data) form.reset({ name: category.data.name });
   }, [category]);
 
   if (isCategoryLoading) return <CategoryFormSkeleton />;
@@ -75,19 +78,19 @@ const CategoryForm = ({
           )}
         />
         <div className="flex justify-end gap-x-2">
-          <Button variant="secondary" type="button" onClick={onCancel}>
+          <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <TbLoader className="animate-spin" />
-                {isCreate ? 'Creating..' : 'Updating..'}
+                {isUpdate ? 'Updating..' : 'Creating..'}
               </>
-            ) : isCreate ? (
-              'Create'
-            ) : (
+            ) : isUpdate ? (
               'Update'
+            ) : (
+              'Create'
             )}
           </Button>
         </div>

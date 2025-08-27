@@ -1,4 +1,4 @@
-'use client'
+'use client';
 
 import { Button } from '@/components/shadcn/button';
 import { Input } from '@/components/shadcn/input';
@@ -32,10 +32,11 @@ import {
 import { useEffect } from 'react';
 import { TbLoader } from 'react-icons/tb';
 import { Skeleton } from '@/components/shadcn/skeleton';
+import { toast } from 'react-hot-toast';
 
-const UserFormSkeleton = ({ isCreate }) => (
+const UserFormSkeleton = ({ isUpdate }) => (
   <div className="space-y-4">
-    {!isCreate && (
+    {isUpdate && (
       <div className="flex justify-center">
         <Skeleton className="h-32 w-32 rounded-full" />
       </div>
@@ -55,46 +56,50 @@ const UserFormSkeleton = ({ isCreate }) => (
   </div>
 );
 
-const UserForm = ({id, onSubmitComplete, onCancel, isCreate}) => {
+const UserForm = ({ id, onSuccess, onClose, isUpdate }) => {
   const { data: user, isLoading: isUserLoading } = useShowUserQuery(id, {
-      skip: isCreate || !id
-    });
+    skip: !isUpdate || !id,
+  });
   const { data: roles, isLoading: isRolesLoading } = useListRolesQuery();
   const { form, handleSubmit, isLoading } = useFormHandler({
-    fileFieldname: 'avatar',
-    isCreate,
-    mutation: isCreate ? useCreateUserMutation : useUpdateUserMutation,
-    onSubmitComplete,
+    isUpdate,
+    mutation: isUpdate ? useUpdateUserMutation : useCreateUserMutation,
+    onSuccess: result => {
+      onSuccess();
+      toast.success(result.message);
+    },
+    onError: e => toast.error(e.message),
     defaultValues: {
       username: '',
       email: '',
       password: '',
       roleId: '',
     },
-    ...(!isCreate && { 
+    ...(isUpdate && {
       params: [{ name: 'userId', value: id }],
+      file: { fieldName: 'avatar', isMultiple: false },
     }),
   });
 
   useEffect(() => {
-    if (!isCreate && user?.data && roles?.data?.length > 0) {
+    if (isUpdate && user?.data && roles?.data?.length > 0) {
       form.reset({
         username: user.data.username,
         email: user.data.email,
         role: user.data.role.id,
-        password: ''
+        password: '',
       });
     }
   }, [user, roles]);
 
   if (isUserLoading || isRolesLoading)
-    return <UserFormSkeleton isCreate={isCreate} />;
+    return <UserFormSkeleton isUpdate={isUpdate} />;
 
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {!isCreate && (
-          <>
+        {isUpdate && (
+          <div>
             <div className="flex justify-center">
               <Avatar className="size-32">
                 <AvatarImage
@@ -124,7 +129,7 @@ const UserForm = ({id, onSubmitComplete, onCancel, isCreate}) => {
                 </FormItem>
               )}
             />
-          </>
+          </div>
         )}
         <FormField
           control={form.control}
@@ -171,9 +176,9 @@ const UserForm = ({id, onSubmitComplete, onCancel, isCreate}) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Role</FormLabel>
-              <Select 
+              <Select
                 key={field.value}
-                value={field.value} 
+                value={field.value}
                 onValueChange={field.onChange}
               >
                 <FormControl>
@@ -194,19 +199,19 @@ const UserForm = ({id, onSubmitComplete, onCancel, isCreate}) => {
           )}
         />
         <div className="flex justify-end gap-x-2">
-          <Button variant="secondary" type="button" onClick={onCancel}>
+          <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <TbLoader className="animate-spin" />
-                {isCreate ? 'Creating..' : 'Updating..'}
+                {isUpdate ? 'Updating..' : 'Creating..'}
               </>
-            ) : isCreate ? (
-              'Create'
-            ) : (
+            ) : isUpdate ? (
               'Update'
+            ) : (
+              'Create'
             )}
           </Button>
         </div>

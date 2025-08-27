@@ -24,12 +24,14 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/components/shadcn/avatar';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useShowUserQuery, useUpdateProfileMutation } from '@/services/userApi';
 import useFormHandler from '@/hooks/useFormHandler';
 import { useEffect } from 'react';
 import { TbLoader } from 'react-icons/tb';
 import AuthGuard from '@/components/auth/AuthGuard';
+import { updateCurrentUser } from '@/lib/features/authSlice';
+import { toast } from 'react-hot-toast';
 
 const ProfileSkeleton = () => {
   return (
@@ -69,36 +71,39 @@ const ProfileSkeleton = () => {
 };
 
 const Profile = () => {
+  const dispatch = useDispatch();
   const currentUser = useSelector(state => state.auth.currentUser);
-  const { data: user, isLoading: isUserLoading, isFetching: isUserFetching } =
-    useShowUserQuery(currentUser?.id);
   const {
-    form,
-    handleSubmit,
-    isLoading
-  } = useFormHandler({
-    fileFieldname: 'avatar',
-    isCreate: false,
-    page: 'profile',
+    data: user,
+    isLoading: isUserLoading,
+    isFetching: isUserFetching,
+  } = useShowUserQuery(currentUser?.id);
+  const { form, handleSubmit, isLoading } = useFormHandler({
+    isUpdate: true,
+    file: { fieldName: 'avatar', isMultiple: false },
     params: [{ name: 'userId', value: currentUser?.id }],
     mutation: useUpdateProfileMutation,
     defaultValues: {
       username: '',
       email: '',
       password: '',
-    }
+    },
+    onSuccess: result => {
+      toast.success(result.message);
+      dispatch(updateCurrentUser(result.data));
+    },
   });
-  
+
   useEffect(() => {
     if (user?.data) {
       form.reset({
         username: user.data.username,
         email: user.data.email,
-        password: ''
+        password: '',
       });
     }
   }, [user]);
-  
+
   if (isUserLoading || isUserFetching) return <ProfileSkeleton />;
 
   return (
@@ -117,7 +122,9 @@ const Profile = () => {
                   <AvatarImage
                     src={user?.data?.avatar}
                     fallback={
-                      <AvatarFallback>{currentUser?.username.charAt(0).toUpperCase()}</AvatarFallback>
+                      <AvatarFallback>
+                        {currentUser?.username.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     }
                   />
                 </Avatar>

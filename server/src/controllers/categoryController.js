@@ -81,12 +81,12 @@ const show = async (req, res) => {
     code: 200,
     message: 'Category retrieved successfully',
     data: category,
-  });
+  }); 
 };
 
 export const search = async (req, res) => {
   const query = validate(searchCategorySchema, req.query);
-  const { page, limit, q } = query;
+  const { page, limit, q, sortBy, sortOrder } = query;
 
   const [{ categories, totalCategories }] = await Category.aggregate()
     .lookup({
@@ -103,7 +103,7 @@ export const search = async (req, res) => {
     .match(q ? { name: { $regex: q, $options: 'i' } } : {})
     .facet({
       categories: [
-        { $sort: { createdAt: -1 } },
+        { $sort: { [sortBy]: sortOrder === 'asc' ? 1 : -1 } },
         { $skip: (page - 1) * limit },
         { $limit: limit },
       ],

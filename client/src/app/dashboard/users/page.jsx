@@ -27,7 +27,9 @@ const User = () => {
   const columnsHelper = createColumnHelper();
   const columns = [
     columnsHelper.accessor('avatar', {
+      id: 'avatar',
       header: 'Avatar',
+      enableSorting: false,
       size: 60,
       cell: info => (
         <Avatar>
@@ -39,20 +41,21 @@ const User = () => {
       ),
     }),
     columnsHelper.accessor('username', {
+      id: 'username',
       header: 'Username',
       size: 100,
       cell: info => (
         <div className="whitespace-normal break-words">{info.getValue()}</div>
       ),
     }),
-    columnsHelper.accessor('role', {
+    columnsHelper.accessor('role.name', {
+      id: 'role.name',
       header: 'Role',
       size: 60,
       cell: info => {
         const role = info.getValue();
-        if (role.name === 'admin')
-          return <Badge variant="destructive">Admin</Badge>;
-        if (role.name === 'user') return <Badge variant="default">User</Badge>;
+        if (role === 'admin') return <Badge variant="destructive">Admin</Badge>;
+        if (role === 'user') return <Badge variant="default">User</Badge>;
       },
     }),
   ];
@@ -71,7 +74,7 @@ const User = () => {
             searchQuery={useSearchUsersQuery}
             removeMutation={useRemoveUserMutation}
             FormComponent={UserForm}
-            entityName='user'
+            entityName="user"
           />
         </CardContent>
       </Card>

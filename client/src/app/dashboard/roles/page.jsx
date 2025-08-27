@@ -3,10 +3,7 @@
 import AuthGuard from '@/components/auth/AuthGuard';
 import { createColumnHelper } from '@tanstack/react-table';
 import DataTable from '@/components/ui/DataTable';
-import {
-  useSearchRolesQuery,
-  useRemoveRoleMutation,
-} from '@/services/roleApi';
+import { useSearchRolesQuery, useRemoveRoleMutation } from '@/services/roleApi';
 import RoleForm from '@/components/ui/RoleForm';
 import BreadcrumbNav from '@/components/ui/BreadcrumbNav';
 import {
@@ -21,6 +18,7 @@ const Role = () => {
   const columnHelper = createColumnHelper();
   const columns = [
     columnHelper.accessor('name', {
+      id: 'name',
       header: 'Name',
       size: 100,
       cell: info => (
@@ -43,7 +41,7 @@ const Role = () => {
             searchQuery={useSearchRolesQuery}
             removeMutation={useRemoveRoleMutation}
             FormComponent={RoleForm}
-            entityName='role'
+            entityName="role"
           />
         </CardContent>
       </Card>

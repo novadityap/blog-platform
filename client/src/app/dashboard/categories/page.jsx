@@ -21,6 +21,7 @@ const Category = () => {
   const columnHelper = createColumnHelper();
   const columns = [
     columnHelper.accessor('name', {
+      id: 'name',
       header: 'Name',
       size: 100,
       cell: info => (

@@ -30,13 +30,14 @@ import { AspectRatio } from '@/components/shadcn/aspect-ratio';
 import { TbLoader } from 'react-icons/tb';
 import { Skeleton } from '@/components/shadcn/skeleton';
 import Image from 'next/image';
+import { toast } from 'react-hot-toast';
 
-const PostFormSkeleton = ({isCreate}) => (
+const PostFormSkeleton = ({ isUpdate }) => (
   <div className="space-y-4">
-    {!isCreate && (
+    {isUpdate && (
       <div className="flex justify-center">
-      <Skeleton className="size-52 rounded-sm" />
-    </div>
+        <Skeleton className="size-52 rounded-sm" />
+      </div>
     )}
     <Skeleton className="h-4 w-20" />
     <Skeleton className="h-10 w-full" />
@@ -51,29 +52,33 @@ const PostFormSkeleton = ({isCreate}) => (
   </div>
 );
 
-const PostForm = ({ id, onSubmitComplete, onCancel, isCreate }) => {
+const PostForm = ({ id, onSuccess, onClose, isUpdate }) => {
   const { data: categories, isLoading: isCategoriesLoading } =
     useListCategoriesQuery();
   const { data: post, isLoading: isPostLoading } = useShowPostQuery(id, {
-    skip: isCreate || !id,
+    skip: !isUpdate || !id,
   });
   const { form, handleSubmit, isLoading } = useFormHandler({
-    isCreate,
-    fileFieldname: 'image',
-    mutation: isCreate ? useCreatePostMutation : useUpdatePostMutation,
-    onSubmitComplete,
+    isUpdate,
+    file: { fieldName: 'image', isMultiple: false },
+    mutation: isUpdate ? useUpdatePostMutation : useCreatePostMutation,
     defaultValues: {
       title: '',
       content: '',
       category: '',
     },
-    ...(!isCreate && {
+    ...(isUpdate && {
       params: [{ name: 'postId', value: id }],
     }),
+    onSuccess: result => {
+      onSuccess();
+      toast.success(result.message);
+    },
+    onError: e => toast.error(e.message),
   });
 
   useEffect(() => {
-    if (!isCreate && post?.data && categories?.data) {
+    if (isUpdate && post?.data && categories?.data) {
       form.reset({
         title: post.data.title,
         content: post.data.content,
@@ -82,12 +87,13 @@ const PostForm = ({ id, onSubmitComplete, onCancel, isCreate }) => {
     }
   }, [post, categories]);
 
-  if (isPostLoading || isCategoriesLoading) return <PostFormSkeleton isCreate={isCreate} />;
+  if (isPostLoading || isCategoriesLoading)
+    return <PostFormSkeleton isUpdate={isUpdate} />;
 
   return (
     <Form {...form}>
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {!isCreate && post?.data?.image && (
+        {isUpdate && post?.data?.image && (
           <AspectRatio ratio={16 / 9}>
             <Image
               fill
@@ -191,19 +197,19 @@ const PostForm = ({ id, onSubmitComplete, onCancel, isCreate }) => {
           )}
         />
         <div className="flex justify-end gap-x-2">
-          <Button variant="secondary" type="button" onClick={onCancel}>
+          <Button variant="secondary" type="button" onClick={onClose}>
             Cancel
           </Button>
           <Button type="submit" disabled={isLoading}>
             {isLoading ? (
               <>
                 <TbLoader className="animate-spin" />
-                {isCreate ? 'Creating..' : 'Updating..'}
+                {isUpdate ? 'Updating..' : 'Creating..'}
               </>
-            ) : isCreate ? (
-              'Create'
-            ) : (
+            ) : isUpdate ? (
               'Update'
+            ) : (
+              'Create'
             )}
           </Button>
         </div>
