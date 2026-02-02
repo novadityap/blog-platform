@@ -1,47 +1,67 @@
 import { useForm } from 'react-hook-form';
 import { useState } from 'react';
 
-const getChangedData = (dirtyFields, form) => {
-  return Object.fromEntries(
-    Object.keys(dirtyFields).map(key => [key, form.getValues(key)])
-  );
-};
-
 const sanitizeNull = data => {
-  return Object.fromEntries(
-    Object.entries(data).map(([key, value]) => [key, value ?? ''])
-  );
-};
+  const result = {};
 
-const filterEmptyValues = data => {
-  return Object.fromEntries(
-    Object.entries(data).filter(([_, value]) => value !== '')
-  );
-};
-
-const buildFormData = ({ data, fileName, isMultiple }) => {
-  const formData = new FormData();
-
-  Object.keys(data).forEach(key => {
+  for (const key in data) {
     const value = data[key];
 
-    if (isMultiple && key === fileName) {
-      value.forEach(file => formData.append(`${key}`, file));
+    if (value === null || value === undefined) {
+      result[key] = '';
     } else {
-      formData.append(key, value);
+      result[key] = value;
     }
-  });
+  }
+
+  return result;
+};
+
+const buildFormData = ({ data, fieldName, isMultiple, method }) => {
+  const formData = new FormData();
+
+  for (const key in data) {
+    const value = data[key];
+
+    if (key === fieldName) {
+      if (isMultiple === true && Array.isArray(value)) {
+        for (let i = 0; i < value.length; i++) {
+          if (value[i] instanceof File) {
+            formData.append(key, value[i]);
+          }
+        }
+      } else {
+        if (value instanceof File) {
+          formData.append(key, value);
+        }
+      }
+    } else {
+      if (value !== null && value !== undefined) {
+        formData.append(key, value);
+      }
+    }
+  }
 
   return formData;
 };
 
 const buildPayload = (data, params) => {
-  return params?.length
-    ? {
-        data,
-        ...Object.fromEntries(params.map(({ name, value }) => [name, value])),
-      }
-    : data;
+  if (!params || params.length === 0) {
+    return data;
+  }
+
+  const payload = {};
+  payload.data = data;
+
+  for (let i = 0; i < params.length; i++) {
+    const param = params[i];
+    const name = param.name;
+    const value = param.value;
+
+    payload[name] = value;
+  }
+
+  return payload;
 };
 
 const useFormHandler = ({
@@ -63,17 +83,12 @@ const useFormHandler = ({
 
   const onSubmit = async data => {
     try {
-      if (isUpdate) {
-        data = getChangedData(dirtyFields, form);
-      } else {
-        data = filterEmptyValues(data);
-      }
-
       if (file?.fieldName) {
         data = buildFormData({
           data,
-          fileName: file.fieldName,
+          fieldName: file.fieldName,
           isMultiple: file.isMultiple,
+          ...(isUpdate && { method: file.method }),
         });
       }
 
@@ -92,10 +107,14 @@ const useFormHandler = ({
       if (onSuccess) onSuccess(result);
     } catch (e) {
       if (e.errors) {
-        Object.keys(e.errors).forEach(key => {
+        for (const key in e.errors) {
           const message = e.errors[key];
-          form.setError(key, { type: 'manual', message });
-        });
+
+          form.setError(key, {
+            type: 'manual',
+            message: message,
+          });
+        }
       }
 
       if (e.code !== 400) {
