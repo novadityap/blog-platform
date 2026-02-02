@@ -52,7 +52,7 @@ const postApi = createApi({
     updatePost: builder.mutation({
       query: ({ data, postId }) => ({
         url: `/posts/${postId}`,
-        method: 'PATCH',
+        method: 'PUT',
         data,
         headers: { 'Content-Type': 'multipart/form-data' },
       }),
@@ -64,7 +64,7 @@ const postApi = createApi({
     likePost: builder.mutation({
       query: postId => ({
         url: `/posts/${postId}/like`,
-        method: 'PATCH',
+        method: 'PUT',
       }),
       invalidatesTags: (result, error, { postId }) => [
         { type: 'Post', id: postId },

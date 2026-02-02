@@ -243,7 +243,7 @@ describe('POST /api/users', () => {
   });
 });
 
-describe('PATCH /api/users/:userId/profile', () => {
+describe('PUT /api/users/:userId/profile', () => {
   beforeEach(async () => {
     await createTestUser();
     await createAccessToken();
@@ -265,7 +265,7 @@ describe('PATCH /api/users/:userId/profile', () => {
     await createAccessToken();
 
     const result = await request(app)
-      .patch(`/api/users/${otherUser._id}/profile`)
+      .put(`/api/users/${otherUser._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(403);
@@ -274,7 +274,7 @@ describe('PATCH /api/users/:userId/profile', () => {
 
   it('should return an error if user id is invalid', async () => {
     const result = await request(app)
-      .patch('/api/users/invalid-id')
+      .put('/api/users/invalid-id')
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -284,7 +284,7 @@ describe('PATCH /api/users/:userId/profile', () => {
 
   it('should return an error if user is not found', async () => {
     const result = await request(app)
-      .patch(`/api/users/${global.validObjectId}/profile`)
+      .put(`/api/users/${global.validObjectId}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -294,7 +294,7 @@ describe('PATCH /api/users/:userId/profile', () => {
   it('should return an error if input data is invalid', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}/profile`)
+      .put(`/api/users/${user._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', '')
@@ -311,7 +311,7 @@ describe('PATCH /api/users/:userId/profile', () => {
 
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}/profile`)
+      .put(`/api/users/${user._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -327,7 +327,7 @@ describe('PATCH /api/users/:userId/profile', () => {
 
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}/profile`)
+      .put(`/api/users/${user._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -341,7 +341,7 @@ describe('PATCH /api/users/:userId/profile', () => {
   it('should update profile without changing avatar', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}/profile`)
+      .put(`/api/users/${user._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -356,7 +356,7 @@ describe('PATCH /api/users/:userId/profile', () => {
   it('should update profile with changing avatar', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}/profile`)
+      .put(`/api/users/${user._id}/profile`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -376,7 +376,7 @@ describe('PATCH /api/users/:userId/profile', () => {
   });
 });
 
-describe('PATCH /api/users/:userId', () => {
+describe('PUT /api/users/:userId', () => {
   beforeEach(async () => {
     await createTestUser();
     await createAccessToken();
@@ -398,7 +398,7 @@ describe('PATCH /api/users/:userId', () => {
     await createAccessToken();
 
     const result = await request(app)
-      .patch(`/api/users/${otherUser._id}`)
+      .put(`/api/users/${otherUser._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(403);
@@ -407,7 +407,7 @@ describe('PATCH /api/users/:userId', () => {
 
   it('should return an error if user id is invalid', async () => {
     const result = await request(app)
-      .patch('/api/users/invalid-id')
+      .put('/api/users/invalid-id')
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -417,7 +417,7 @@ describe('PATCH /api/users/:userId', () => {
 
   it('should return an error if user is not found', async () => {
     const result = await request(app)
-      .patch(`/api/users/${global.validObjectId}`)
+      .put(`/api/users/${global.validObjectId}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -427,7 +427,7 @@ describe('PATCH /api/users/:userId', () => {
   it('should return an error if input data is invalid', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', '')
@@ -442,7 +442,7 @@ describe('PATCH /api/users/:userId', () => {
   it('should return an error if role is invalid', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -460,7 +460,7 @@ describe('PATCH /api/users/:userId', () => {
     const user = await getTestUser();
     const role = await getTestRole('user');
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -478,7 +478,7 @@ describe('PATCH /api/users/:userId', () => {
     const user = await getTestUser();
     const role = await getTestRole('user');
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -494,7 +494,7 @@ describe('PATCH /api/users/:userId', () => {
     const user = await getTestUser();
     const role = await getTestRole('user');
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')
@@ -511,7 +511,7 @@ describe('PATCH /api/users/:userId', () => {
   it('should update user with changing avatar', async () => {
     const user = await getTestUser();
     const result = await request(app)
-      .patch(`/api/users/${user._id}`)
+      .put(`/api/users/${user._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('email', 'test1@me.com')

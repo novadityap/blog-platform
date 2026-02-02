@@ -38,7 +38,7 @@ const userApi = createApi({
     updateUser: builder.mutation({
       query: ({ data, userId }) => ({
         url: `/users/${userId}`,
-        method: 'PATCH',
+        method: 'PUT',
         data,
         headers: { 'Content-Type': 'multipart/form-data' },
       }),
@@ -50,7 +50,7 @@ const userApi = createApi({
     updateProfile: builder.mutation({
       query: ({ data, userId }) => ({
         url: `/users/${userId}/profile`,
-        method: 'PATCH',
+        method: 'PUT',
         data,
         headers: { 'Content-Type': 'multipart/form-data' },
       }),

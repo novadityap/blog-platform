@@ -181,7 +181,7 @@ describe('POST /api/categories', () => {
   });
 });
 
-describe('PATCH /api/categories/:categoryId', () => {
+describe('PUT /api/categories/:categoryId', () => {
   beforeEach(async () => {
     await createTestUser();
     await createAccessToken();
@@ -202,7 +202,7 @@ describe('PATCH /api/categories/:categoryId', () => {
 
     const category = await getTestCategory();
     const result = await request(app)
-      .patch(`/api/categories/${category._id}`)
+      .put(`/api/categories/${category._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(403);
@@ -211,7 +211,7 @@ describe('PATCH /api/categories/:categoryId', () => {
 
   it('should return an error if category id is invalid', async () => {
     const result = await request(app)
-      .patch('/api/categories/invalid-id')
+      .put('/api/categories/invalid-id')
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -224,7 +224,7 @@ describe('PATCH /api/categories/:categoryId', () => {
 
     const category = await getTestCategory();
     const result = await request(app)
-      .patch(`/api/categories/${category._id}`)
+      .put(`/api/categories/${category._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .send({
         name: 'test1',
@@ -237,7 +237,7 @@ describe('PATCH /api/categories/:categoryId', () => {
 
   it('should return an error if category is not found', async () => {
     const result = await request(app)
-      .patch(`/api/categories/${global.validObjectId}`)
+      .put(`/api/categories/${global.validObjectId}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -247,7 +247,7 @@ describe('PATCH /api/categories/:categoryId', () => {
   it('should update category if input data is valid', async () => {
     const category = await getTestCategory();
     const result = await request(app)
-      .patch(`/api/categories/${category._id}`)
+      .put(`/api/categories/${category._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .send({
         name: 'test1',

@@ -277,7 +277,7 @@ describe('POST /api/posts/:postId/comments', () => {
   });
 });
 
-describe('PATCH /api/posts/:postId/comments/:commentId', () => {
+describe('PUT /api/posts/:postId/comments/:commentId', () => {
   beforeEach(async () => {
     await createTestCategory();
     await createTestUser();
@@ -301,7 +301,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
     await createAccessToken();
 
     const result = await request(app)
-      .patch(
+      .put(
         `/api/posts/${global.validObjectId}/comments/${global.validObjectId}`
       )
       .set('Authorization', `Bearer ${global.accessToken}`);
@@ -312,7 +312,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
 
   it('should return an error if post id is invalid', async () => {
     const result = await request(app)
-      .patch(`/api/posts/invalid-id/comments/${global.validObjectId}`)
+      .put(`/api/posts/invalid-id/comments/${global.validObjectId}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -322,7 +322,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
 
   it('should return an error if post is not found', async () => {
     const result = await request(app)
-      .patch(
+      .put(
         `/api/posts/${global.validObjectId}/comments/${global.validObjectId}`
       )
       .set('Authorization', `Bearer ${global.accessToken}`);
@@ -334,7 +334,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
   it('should return an error if comment id is invalid', async () => {
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}/comments/invalid-id`)
+      .put(`/api/posts/${post._id}/comments/invalid-id`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -345,7 +345,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
   it('should return an error if comment is not found', async () => {
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}/comments/${global.validObjectId}`)
+      .put(`/api/posts/${post._id}/comments/${global.validObjectId}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -355,7 +355,7 @@ describe('PATCH /api/posts/:postId/comments/:commentId', () => {
   it('should update comment if input data is valid', async () => {
     const comment = await getTestComment();
     const result = await request(app)
-      .patch(`/api/posts/${comment.post._id}/comments/${comment._id}`)
+      .put(`/api/posts/${comment.post._id}/comments/${comment._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .send({
         text: 'test1',

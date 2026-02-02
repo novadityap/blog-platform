@@ -183,7 +183,7 @@ describe('POST /api/posts', () => {
   });
 });
 
-describe('PATCH /api/posts/:postId', () => {
+describe('PUT /api/posts/:postId', () => {
   beforeEach(async () => {
     await createTestUser();
     await createTestCategory();
@@ -199,7 +199,7 @@ describe('PATCH /api/posts/:postId', () => {
 
   it('should return an error if post id is invalid', async () => {
     const result = await request(app)
-      .patch('/api/posts/invalid-id')
+      .put('/api/posts/invalid-id')
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -209,7 +209,7 @@ describe('PATCH /api/posts/:postId', () => {
 
   it('should return an error if post is not found', async () => {
     const result = await request(app)
-      .patch(`/api/posts/${global.validObjectId}`)
+      .put(`/api/posts/${global.validObjectId}`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -219,7 +219,7 @@ describe('PATCH /api/posts/:postId', () => {
   it('should return an error if input data is invalid', async () => {
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}`)
+      .put(`/api/posts/${post._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('content', '')
@@ -236,7 +236,7 @@ describe('PATCH /api/posts/:postId', () => {
   it('should return an error if category is invalid', async () => {
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}`)
+      .put(`/api/posts/${post._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('content', 'test1')
@@ -252,7 +252,7 @@ describe('PATCH /api/posts/:postId', () => {
     const category = await getTestCategory();
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}`)
+      .put(`/api/posts/${post._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('content', 'test1')
@@ -273,7 +273,7 @@ describe('PATCH /api/posts/:postId', () => {
     );
     const post = await updateTestPost({ image: uploadResult.secure_url });
     const result = await request(app)
-      .patch(`/api/posts/${post._id}`)
+      .put(`/api/posts/${post._id}`)
       .set('Authorization', `Bearer ${global.accessToken}`)
       .set('Content-Type', 'multipart/form-data')
       .field('title', 'test1')
@@ -349,7 +349,7 @@ describe('DELETE /api/posts/:postId', () => {
   });
 });
 
-describe('PATCH /api/posts/:postId/like', () => {
+describe('PUT /api/posts/:postId/like', () => {
   beforeEach(async () => {
     await createTestUser();
     await createTestCategory();
@@ -364,7 +364,7 @@ describe('PATCH /api/posts/:postId/like', () => {
   });
 
   it('should return an error if user does not authenticate', async () => {
-    const result = await request(app).patch(
+    const result = await request(app).put(
       `/api/posts/${global.validObjectId}/like`
     );
 
@@ -374,7 +374,7 @@ describe('PATCH /api/posts/:postId/like', () => {
 
   it('should return an error if post is not found', async () => {
     const result = await request(app)
-      .patch(`/api/posts/${global.validObjectId}/like`)
+      .put(`/api/posts/${global.validObjectId}/like`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(404);
@@ -383,7 +383,7 @@ describe('PATCH /api/posts/:postId/like', () => {
 
   it('should return an error if post id is invalid', async () => {
     const result = await request(app)
-      .patch('/api/posts/invalid-id/like')
+      .put('/api/posts/invalid-id/like')
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(400);
@@ -394,7 +394,7 @@ describe('PATCH /api/posts/:postId/like', () => {
   it('should user like a post', async () => {
     const post = await getTestPost();
     const result = await request(app)
-      .patch(`/api/posts/${post._id}/like`)
+      .put(`/api/posts/${post._id}/like`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(200);
@@ -408,7 +408,7 @@ describe('PATCH /api/posts/:postId/like', () => {
     await updateTestPost({ likes: [user._id] });
 
     const result = await request(app)
-      .patch(`/api/posts/${post._id}/like`)
+      .put(`/api/posts/${post._id}/like`)
       .set('Authorization', `Bearer ${global.accessToken}`);
 
     expect(result.status).toBe(200);
