@@ -12,8 +12,8 @@ pipeline {
     stage('Build & Test') {
       steps {
         withCredentials([
-          file(credentialsId: 'property-platform-client', variable: 'CLIENT_ENV'),
-          file(credentialsId: 'property-platform-server', variable: 'SERVER_ENV'),
+          file(credentialsId: 'blog-platform-client', variable: 'CLIENT_ENV'),
+          file(credentialsId: 'blog-platform-server', variable: 'SERVER_ENV'),
         ]) {
           sh '''
             cp "$CLIENT_ENV" client/.env 
