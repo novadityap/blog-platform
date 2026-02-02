@@ -1,50 +1,59 @@
 services:
   server:
-    image: novadityap/blog-app-server-dev
-    container_name: blog-app-server-dev
+    image: novadityap/blog-platform-server-dev
+    container_name: blog-platform-server-dev
+    command: >
+      sh -c "
+        npm run seed &&
+        npm run dev
+      "
     build:
       context: ./server
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile
     env_file:
       - ./server/.env.development
     ports:
-      - "3000:3000"
+      - "8000:8000"
     depends_on:
       - mongo
     restart: always
+    volumes:
+      - ./server:/app           
+      - /app/node_modules  
     networks:
-      - blog-app-dev
+      - blog-platform-dev
 
   client:
-    image: novadityap/blog-app-client-dev
-    container_name: blog-app-client-dev
+    image: novadityap/blog-platform-client-dev
+    container_name: blog-platform-client-dev
     build:
       context: ./client
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile
+    command: npm run dev
     env_file:
       - ./client/.env.development
     ports:
-      - "5173:5173"
+      - "3000:3000"
     restart: always
     volumes:
       - ./client:/app
       - /app/node_modules
     networks:
-      - blog-app-dev
+      - blog-platform-dev
 
   mongo:
-    container_name: blog-app-mongo-dev
+    container_name: blog-platform-mongo-dev
     image: mongo:8.0
     ports:
       - "27017:27017"
     volumes:
       - blog-mongo-data:/data/db
     networks:
-      - blog-app-dev
+      - blog-platform-dev
 
 volumes:
   blog-mongo-data:
     name: blog-mongo-data
 networks:
-  blog-app-dev:
-    name: blog-app-dev
+  blog-platform-dev:
+    name: blog-platform-dev

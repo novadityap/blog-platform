@@ -1,51 +1,67 @@
+# =========================
+# Environment & Secrets
+# =========================
+.env
+.env.*
+vercel.env.*
+
+# =========================
+# Dependencies (Host-only)
+# =========================
 node_modules
-.env.development
-.env.local
-.env.development.local
-.env.production.local
-.env.test.local
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-vercel
-vercel.env.production
-vercel.env.development
-vercel.env.test
-
+# =========================
+# Next.js Build Artifacts
+# =========================
 .next
 .next/static
+out
+build
 
+# =========================
+# Cache
+# =========================
 .cache
 .cache-loader
 
+# =========================
+# Logs & Runtime Files
+# =========================
 logs
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
 pids
 *.pid
 *.seed
-*.log
+*.out
 *.csv
 *.dat
-*.out
-*.pid
-*.seed
-*.sqlite
-*.log
-*.csv
-*.dat
-*.out
-*.pid
-*.seed
 *.sqlite
 
-package-lock.json
-yarn.lock
-
+# =========================
+# Testing
+# =========================
 __snapshots__
+coverage
 jest
 
-*.sublime-project
-*.sublime-workspace
+# =========================
+# Vercel
+# =========================
+.vercel
+vercel
+
+# =========================
+# VCS & Editor
+# =========================
+.git
+.gitignore
 
 .idea
 .vscode
@@ -55,6 +71,12 @@ jest
 *.sln
 *.sw?
 
+*.sublime-project
+*.sublime-workspace
+
+# =========================
+# OS
+# =========================
 .DS_Store
 .DS_Store?
 ._*
@@ -63,6 +85,3 @@ jest
 ehthumbs.db
 Thumbs.db
 desktop.ini
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
