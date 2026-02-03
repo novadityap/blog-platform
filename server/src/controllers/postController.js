@@ -53,6 +53,26 @@ const search = async (req, res) => {
   const query = validate(searchPostSchema, req.query);
   const { page, limit, q, category, sortBy, sortOrder } = query;
 
+  const matchConditions = [];
+
+  if (q) {
+    matchConditions.push({
+      $or: [
+        { title: { $regex: q, $options: 'i' } },
+        { content: { $regex: q, $options: 'i' } },
+        { 'user.username': { $regex: q, $options: 'i' } },
+        { 'user.email': { $regex: q, $options: 'i' } },
+        { 'category.name': { $regex: q, $options: 'i' } },
+      ],
+    });
+  }
+
+  if (category && mongoose.Types.ObjectId.isValid(category)) {
+    matchConditions.push({
+      'category._id': new mongoose.Types.ObjectId(category),
+    });
+  }
+
   const [{ posts, totalPosts }] = await Post.aggregate()
     .lookup({
       from: 'users',
@@ -67,26 +87,9 @@ const search = async (req, res) => {
       foreignField: '_id',
       as: 'category',
     })
-    .match({
-      $and: [
-        q
-          ? {
-              $or: [
-                { title: { $regex: q, $options: 'i' } },
-                { content: { $regex: q, $options: 'i' } },
-                { 'user.username': { $regex: q, $options: 'i' } },
-                { 'user.email': { $regex: q, $options: 'i' } },
-                { 'category.name': { $regex: q, $options: 'i' } },
-              ],
-            }
-          : {},
-        category
-          ? { 'category._id': new mongoose.Types.ObjectId(category) }
-          : {},
-      ],
-    })
     .unwind('user')
     .unwind('category')
+    .match(matchConditions.length ? { $and: matchConditions } : {})
     .project({ likes: 0 })
     .facet({
       posts: [
@@ -104,7 +107,6 @@ const search = async (req, res) => {
     });
 
   if (posts.length === 0) {
-    logger.info('no posts found');
     return res.status(200).json({
       code: 200,
       message: 'No posts found',
@@ -120,7 +122,6 @@ const search = async (req, res) => {
 
   const formattedPosts = posts.map(post => formatMongoDoc(post, true));
 
-  logger.info('posts retrieved successfully');
   res.status(200).json({
     code: 200,
     message: 'Posts retrieved successfully',

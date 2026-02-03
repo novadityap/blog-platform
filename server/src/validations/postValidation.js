@@ -7,7 +7,7 @@ const postSchema = Joi.object({
     .required()
     .custom((value, helpers) => {
       const trimmed = value.trim();
-      if (trimmed === '' || trimmed === '<p><br></p>') {
+      if (trimmed === '' || trimmed === '<p></p>') {
         return helpers.message('Content is not allowed to be empty');
       }
       return value;
