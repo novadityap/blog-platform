@@ -120,7 +120,7 @@ const CategoryFilter = ({ categories, onOpen, onChange }) => (
           <SelectValue placeholder="Select a category" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value={null}>All Categories</SelectItem>
+          <SelectItem value="all">All Categories</SelectItem>
           {categories?.data?.map(category => (
             <SelectItem key={category.id} value={category.id}>
               {category.name}
@@ -162,7 +162,7 @@ const Home = () => {
   useEffect(() => {
     if (data?.data) {
       setPosts(prev =>
-        currentPage === 1 ? data.data : [...prev, ...data.data]
+        currentPage === 1 ? data.data : [...prev, ...data.data],
       );
       setHasMore(data.data.length >= 10);
     }
@@ -210,7 +210,15 @@ const Home = () => {
       <CategoryFilter
         categories={categories}
         onOpen={open => open && !categories && fetchCategories()}
-        onChange={value => setFilters(prev => ({ ...prev, category: value }))}
+        onChange={value => {
+          setFilters(prev => {
+            if (value === 'all') {
+              const { category, ...rest } = prev;
+              return rest;
+            }
+            return { ...prev, category: value };
+          });
+        }}
       />
     </div>
   );

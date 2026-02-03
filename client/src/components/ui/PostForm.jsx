@@ -25,12 +25,12 @@ import {
   FormControl,
 } from '@/components/shadcn/form';
 import { useEffect } from 'react';
-import ReactQuill from 'react-quill-new';
 import { AspectRatio } from '@/components/shadcn/aspect-ratio';
 import { TbLoader } from 'react-icons/tb';
 import { Skeleton } from '@/components/shadcn/skeleton';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
+import ReactQuill from 'react-quill-new';
 
 const PostFormSkeleton = ({ isUpdate }) => (
   <div className="space-y-4">
@@ -140,7 +140,7 @@ const PostForm = ({ id, onSuccess, onClose, isUpdate }) => {
             <FormItem>
               <FormLabel>Content</FormLabel>
               <FormControl>
-                <ReactQuill
+               <ReactQuill
                   theme="snow"
                   value={field.value}
                   onChange={field.onChange}

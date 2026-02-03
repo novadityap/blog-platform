@@ -34,13 +34,18 @@ const RoleFormSkeleton = () => (
   </div>
 );
 
-const RoleForm = ({ id, isUpdate, onSuccess, onClose }) => {
+const RoleForm = ({ id, onSuccess, onClose, isUpdate }) => {
   const { data: role, isLoading: isRoleLoading } = useShowRoleQuery(id, {
     skip: !isUpdate || !id,
   });
   const { form, handleSubmit, isLoading } = useFormHandler({
+    formType: 'datatable',
     isUpdate,
     mutation: isUpdate ? useUpdateRoleMutation : useCreateRoleMutation,
+    onSuccess,
+    defaultValues: {
+      name: '',
+    },
     onSuccess: result => {
       onSuccess();
       toast.success(result.message);

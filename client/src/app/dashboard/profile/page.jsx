@@ -30,8 +30,8 @@ import useFormHandler from '@/hooks/useFormHandler';
 import { useEffect } from 'react';
 import { TbLoader } from 'react-icons/tb';
 import AuthGuard from '@/components/auth/AuthGuard';
-import { updateCurrentUser } from '@/lib/features/authSlice';
 import { toast } from 'react-hot-toast';
+import { updateCurrentUser } from '@/lib/features/authSlice';
 
 const ProfileSkeleton = () => {
   return (
@@ -79,8 +79,8 @@ const Profile = () => {
     isFetching: isUserFetching,
   } = useShowUserQuery(currentUser?.id);
   const { form, handleSubmit, isLoading } = useFormHandler({
-    isUpdate: true,
     file: { fieldName: 'avatar', isMultiple: false },
+    isUpdate: true,
     params: [{ name: 'userId', value: currentUser?.id }],
     mutation: useUpdateProfileMutation,
     defaultValues: {
@@ -111,7 +111,7 @@ const Profile = () => {
       <BreadcrumbNav />
       <Card>
         <CardHeader>
-          <CardTitle className="text-heading">Profile</CardTitle>
+          <CardTitle className="text-gray-800">Profile</CardTitle>
           <CardDescription>Manage your profile</CardDescription>
         </CardHeader>
         <CardContent>
