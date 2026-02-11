@@ -1,4 +1,4 @@
-# Blog App
+# Blog Platform
 
 A full-stack blogging platform with modern features such as user authentication, role-based access control, post and comment management, likes/dislikes, and an admin dashboard.
 
